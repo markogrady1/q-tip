@@ -1,0 +1,66 @@
+name: nodejs
+
+on:
+- pull_request
+- push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+        - Node.js 10.x
+        - Node.js 11.x
+        - Node.js 12.x
+        - Node.js 14.x
+
+        include:
+        - name: Node.js 10.x
+          node-version: "10.24"
+          npm-i: jest@27.0.6  supertest@3.4.2
+
+
+        - name: Node.js 11.x
+          node-version: "11.15"
+          npm-i: jest@27.0.6  supertest@3.4.2
+
+
+        - name: Node.js 12.x
+          node-version: "12.22"
+          npm-i: jest@27.0.6  supertest@3.4.2
+
+        - name: Node.js 14.x
+          node-version: "12.17"
+          npm-i: jest@27.0.6  supertest@3.4.2
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Node.js ${{ matrix.node-version }}
+      shell: bash -eo pipefail -l {0}
+      run: |
+        nvm install --default ${{ matrix.node-version }}
+        dirname "$(nvm which ${{ matrix.node-version }})" >> "$GITHUB_PATH"
+    - name: Configure npm
+      run: |
+        npm config set loglevel error
+        npm config set shrinkwrap false
+    - name: Install npm module(s) ${{ matrix.npm-i }}
+      run: npm install --save-dev ${{ matrix.npm-i }}
+      if: matrix.npm-i != ''
+
+    - name: Install Node.js dependencies
+      run: npm install
+
+    - name: List environment
+      id: list_env
+      shell: bash
+      run: |
+        echo "node@$(node -v)"
+        echo "npm@$(npm -v)"
+        npm -s ls ||:
+    - name: Run tests
+      shell: bash
+      run: npm run test
