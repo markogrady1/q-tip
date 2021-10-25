@@ -2,9 +2,9 @@
   "name": "q-tip",
   "version": "0.0.1",
   "description": "queuing system",
-  "main": "index.js",
+  "main": "dist/index",
   "scripts": {
-    "dev": "node src/index.js",
+    "dev": "node dist/index",
     "test": "jest",
     "lint": "eslint \"src/**/*.js\" \"src/*.js\"",
     "lint:fix": "npm run lint -- --fix"
